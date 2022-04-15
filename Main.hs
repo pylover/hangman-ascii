@@ -48,4 +48,3 @@ greet (Args dbfile n) = do
   words <- loadWords dbfile
   printf "Total words: %d\r\n" (length words)
   hangman words
-
