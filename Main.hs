@@ -6,13 +6,6 @@ import Data.Semigroup ((<>))
 
 import Hangman
 
---   +----+
---   |    |
---   |    O 
---   |   /|\
---   |   / \
---   |
-
 data Args = Args
   { dbfile     :: String
   , enthusiasm :: Int }
