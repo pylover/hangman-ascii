@@ -1,18 +1,29 @@
 module Main where
 
+import Text.Printf
 import Options.Applicative
 import Data.Semigroup ((<>))
 
+import Hangman
+
+--   +----+
+--   |    |
+--   |    O 
+--   |   /|\
+--   |   / \
+--   |
+
 data Args = Args
-  { quiet      :: Bool
+  { dbfile     :: String
   , enthusiasm :: Int }
 
 sample :: Parser Args
 sample = Args
-  <$> switch
-    ( long "quiet"
-   <> short 'q'
-   <> help "Whether to be quiet" )
+  <$> option auto
+    ( long "dbfile"
+   <> help "Text file, one word per line"
+   <> value "db.txt"
+   <> metavar "FILENAME" )
   <*> option auto
     ( long "enthusiasm"
    <> help "How enthusiastically to greet"
@@ -29,6 +40,12 @@ main :: IO ()
 main = do
   greet =<< parseArgs
 
+loadWords :: String -> IO [String]
+loadWords fn = fmap lines $ readFile fn
+
 greet :: Args -> IO ()
-greet (Args False n) = putStrLn $ "Hello, " ++ replicate n '!'
-greet _ = return ()
+greet (Args dbfile n) = do
+  words <- loadWords dbfile
+  printf "Total words: %d\r\n" (length words)
+  hangman words
+
