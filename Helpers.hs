@@ -12,8 +12,12 @@ charJoin :: char -> [Char] -> String
 charJoin s c = mconcat $ (: " ") <$> c
 
 alphabet :: [Char] -> String
-alphabet hidden = charJoin " " $ get.chr <$> [65..90]
-  where get c = bool c ' ' (c `elem` hidden)
+alphabet hidden = charJoin " " $ get.chr <$> [97..122]
+  where 
+    get :: Char -> Char
+    get c 
+      | c `elem` hidden = ' '
+      | otherwise = toUpper c
 
 fill :: Int -> IO ()
 fill x = putStr $ replicate (56 - x) ' '

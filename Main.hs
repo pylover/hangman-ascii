@@ -1,5 +1,6 @@
 module Main where
 
+import System.IO
 import Text.Printf
 import Options.Applicative
 import Data.Semigroup ((<>))
@@ -29,15 +30,14 @@ parseArgs = execParser opts
   where
     opts = info (sample <**> helper) (progDesc "Hangman game")
 
-main :: IO ()
-main = do
-  greet =<< parseArgs
-
 loadWords :: String -> IO [String]
 loadWords fn = fmap lines $ readFile fn
 
-greet :: Args -> IO ()
-greet (Args dbfile n) = do
-  words <- loadWords dbfile
-  printf "Total words: %d\r\n" (length words)
-  hangman words
+main :: IO ()
+main = parseArgs >>= go
+  where 
+    go :: Args -> IO ()
+    go (Args dbfile n) = do
+      words <- loadWords dbfile
+      printf "Total words: %d\r\n" (length words)
+      hangman words
