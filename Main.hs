@@ -9,7 +9,8 @@ import Hangman
 
 data Args = Args
   { dbfile     :: String
-  , enthusiasm :: Int }
+  , enthusiasm :: Int 
+  }
 
 sample :: Parser Args
 sample = Args
