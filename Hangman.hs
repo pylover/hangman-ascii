@@ -20,15 +20,13 @@ maxMistakes Hard = 6
 maxShapeProgress :: Int
 maxShapeProgress = maximum $ pSeverity <$> shapeHangman 
 
-
 shapeProgress :: Skill -> Int -> Int
 shapeProgress Easy invalids = invalids 
 shapeProgress s invalids = invalids * maxShapeProgress `div` (maxMistakes s)
 
-
 data Skill = Easy | Medium | Hard
 
-data Game = Game String Skill (Set Char) (Set Char)
+data Game = Game String String Skill (Set Char) (Set Char)
 
 data Status 
   = Playing
@@ -48,7 +46,7 @@ alphabet hidden = get.chr <$> [97..122]
       | otherwise = toUpper c
 
 printState :: Status -> Game -> IO ()
-printState st (Game word skill valid invalid) = do
+printState st (Game word cat skill valid invalid) = do
   putStrLn "\x1b[8A\x1b[0J"
   mconcat $ putStrLn <$> zipWith fill
     [ mconcat $ (:" ") <$> alphabet (valid `union` invalid)
@@ -56,7 +54,7 @@ printState st (Game word skill valid invalid) = do
     , mconcat $ (:" ").wordChar <$> word
     , ""
     -- , word
-    , getWord st
+    , hint st
     , ""
     ] (shape st <$> [0..6])
   where 
@@ -67,17 +65,17 @@ printState st (Game word skill valid invalid) = do
     wordChar c 
       | c `member` valid = c
       | otherwise = '_'
-    getWord GameOver = mconcat $ (:" ") <$> word
-    getWord _ = ""
+    hint GameOver = mconcat $ (:" ") <$> word
+    hint _ = "Category: " ++ cat
 
 progress :: Char -> Game -> Game
-progress c (Game word skill valid invalid) 
-  | c `elem` word = Game word skill (insert cl valid) invalid
-  | otherwise     = Game word skill valid (insert cl invalid)
+progress c (Game word cat skill valid invalid) 
+  | c `elem` word = Game word cat skill (insert cl valid) invalid
+  | otherwise     = Game word cat skill valid (insert cl invalid)
   where cl = toLower c
 
 status :: Game -> Status
-status (Game word skill valid invalid) 
+status (Game word cat skill valid invalid) 
   | (length invalid) == (maxMistakes skill) = GameOver
   | (fromList word) == valid = Won
   | otherwise = Playing
@@ -106,18 +104,18 @@ continue = do
       outputStr "\x1b[1A\x1b[0G"
       continue
 
-sessionLoop :: [String] -> Skill -> InputT IO ()
-sessionLoop words skill = do
+sessionLoop :: String -> [String] -> Skill -> InputT IO ()
+sessionLoop cat words skill = do
   w <- lift (randomPick words)
-  stateLoop (Game w skill empty empty)
+  stateLoop (Game w cat skill empty empty)
   c <- continue
   case c of
     False -> return ()
     True -> do
       outputStrLn "\x1b[2A\x1b[0J"
-      sessionLoop words skill
+      sessionLoop cat words skill
 
-hangman :: [String] -> Skill -> IO ()
-hangman words skill = do
+hangman :: String -> [String] -> Skill -> IO ()
+hangman cat words skill = do
   mconcat $ replicate rows (putStrLn "") 
-  runInputT defaultSettings $ sessionLoop words skill
+  runInputT defaultSettings $ sessionLoop cat words skill
