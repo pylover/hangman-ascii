@@ -18,7 +18,8 @@ cabal-version:       >=1.10
 
 executable hangman-game
   main-is:             Main.hs
-  other-modules:       Helpers, Hangman, Shape
+  other-modules:       Hangman
+                     , Shape
   -- other-extensions:
   build-depends:       base >=4.12 && <4.13
                      , optparse-applicative

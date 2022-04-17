@@ -2,10 +2,11 @@ module Hangman where
 
 import Data.Set
 import Data.Char
+import Data.Bool
 import Control.Monad.Trans
 import System.Console.Haskeline
+import System.Random
 
-import Helpers
 import Shape
 
 rows :: Int
@@ -14,15 +15,27 @@ rows = 8
 maxMistakes :: Int
 maxMistakes = maximum $ pSeverity <$> shapeHangman 
 
-data State = State String (Set Char) (Set Char)
+data Game = Game String (Set Char) (Set Char)
 
 data Status 
   = Playing
   | GameOver
   | Won
 
-printState :: Status -> State -> IO ()
-printState st (State word valid invalid) = do
+randomPick :: [String] -> IO String
+randomPick words = (words !!) <$> (randomRIO (0, end))
+  where end = (length words) - 1
+
+alphabet :: Set Char -> String
+alphabet hidden = get.chr <$> [97..122]
+  where 
+    get :: Char -> Char
+    get c 
+      | c `member` hidden = ' '
+      | otherwise = toUpper c
+
+printState :: Status -> Game -> IO ()
+printState st (Game word valid invalid) = do
   putStrLn "\x1b[8A\x1b[0J"
   mconcat $ putStrLn <$> zipWith fill
     [ mconcat $ (:" ") <$> alphabet (valid `union` invalid)
@@ -42,19 +55,19 @@ printState st (State word valid invalid) = do
       | otherwise = '_'
 
 
-progress :: Char -> State -> State
-progress c (State word valid invalid) 
-  | c `elem` word = State word (insert cl valid) invalid
-  | otherwise     = State word valid (insert cl invalid)
+progress :: Char -> Game -> Game
+progress c (Game word valid invalid) 
+  | c `elem` word = Game word (insert cl valid) invalid
+  | otherwise     = Game word valid (insert cl invalid)
   where cl = toLower c
 
-status :: State -> Status
-status (State word valid invalid) 
+status :: Game -> Status
+status (Game word valid invalid) 
   | (length invalid) == maxMistakes = GameOver
   | (fromList word) == valid = Won
   | otherwise = Playing
 
-stateLoop :: State -> InputT IO ()
+stateLoop :: Game -> InputT IO ()
 stateLoop s = do
   let st = status s
   lift (printState st s)
@@ -67,19 +80,20 @@ stateLoop s = do
         Nothing -> return ()
         Just c -> stateLoop (progress c s)
 
+sessionLoop ::[String] -> InputT IO ()
+sessionLoop words= do
+  w <- lift (randomPick words)
+  stateLoop (Game w empty empty)
+  key <- getInputChar "Do you want to continue? [Y/n] "
+  case key of
+    Nothing -> return ()
+    Just 'n' -> return ()
+    Just 'N' -> return ()
+    Just _ -> do
+      outputStrLn "\x1b[2A\x1b[0J"
+      sessionLoop words
+
 hangman :: [String] -> IO ()
 hangman words = do
   mconcat $ replicate rows (putStrLn "") 
-  runInputT defaultSettings loop
-  where 
-    loop :: InputT IO ()
-    loop = do
-      w <- lift (randomPick words)
-      stateLoop (State w empty empty)
-      key <- getInputChar "Do you want to continue? [Y/n] "
-      case key of
-        Nothing -> return ()
-        Just 'n' -> return ()
-        Just _ -> do
-          outputStrLn "\x1b[2A\x1b[0J"
-          loop
+  runInputT defaultSettings $ sessionLoop words
