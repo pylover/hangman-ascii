@@ -6,6 +6,7 @@ import Options.Applicative
 import Data.Semigroup ((<>))
 
 import Hangman2.Game
+import Hangman2.Database
 import Paths_hangman2
 
 data Args = Args
@@ -34,9 +35,7 @@ parseArgs = execParser opts
     opts = info (sample <**> helper) (progDesc "Hangman game")
 
 loadWords :: String -> IO [String]
-loadWords "" = do
-  fn <- getDataFileName "db.txt"
-  loadWords $ fn
+loadWords "" = return dbWords
 loadWords fn = fmap lines $ readFile fn
 
 getSkill :: String -> Skill

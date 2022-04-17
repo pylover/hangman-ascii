@@ -15,14 +15,13 @@ category:            Game
 build-type:          Simple
 extra-source-files:  CHANGELOG.md
 cabal-version:       >=1.10
-data-dir:            wordlists
-data-files:          db.txt
 
 executable hangman2
   main-is:             Main.hs
   other-modules:       Hangman
                      , Paths_hangman2
                      , Shape
+                     , Database
   -- other-extensions:
   build-depends:       base >=4.12 && <4.13
                      , optparse-applicative
