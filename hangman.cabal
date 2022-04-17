@@ -18,7 +18,7 @@ cabal-version:       >=1.10
 
 executable hangman
   main-is:             Main.hs
-  other-modules:       Hangman
+  other-modules:       Game
                      , Paths_hangman
                      , Shape
                      , Database
