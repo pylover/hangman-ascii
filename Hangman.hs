@@ -10,7 +10,7 @@ import System.Random
 import Hangman2.Shape
 
 rows :: Int
-rows = 9
+rows = 8
 
 maxMistakes :: Skill -> Int
 maxMistakes Easy = 18
@@ -118,5 +118,5 @@ sessionLoop session cat words skill = do
 
 hangman :: String -> [String] -> Skill -> IO ()
 hangman cat words skill = do
-  -- mconcat $ replicate rows (putStrLn "") 
+  mconcat $ replicate rows (putStrLn "") 
   runInputT defaultSettings $ sessionLoop (Session 0 0) cat words skill

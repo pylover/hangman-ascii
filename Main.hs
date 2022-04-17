@@ -34,7 +34,7 @@ sample = Args
    <> short 'c'
    <> help ("Categories: all, " ++ conCat ++ ".")
    <> showDefault
-   <> value "all"
+   <> value "fruites"
    <> metavar "SKILL" )
 
 

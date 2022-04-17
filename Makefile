@@ -18,7 +18,6 @@ test:
 install:
 	cabal v2-install hangman2
 
-
 .PHONY: env
 env:
 	cabal update
