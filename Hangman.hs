@@ -10,7 +10,7 @@ import System.Random
 import Hangman2.Shape
 
 rows :: Int
-rows = 8
+rows = 9
 
 maxMistakes :: Skill -> Int
 maxMistakes Easy = 18
@@ -25,13 +25,9 @@ shapeProgress Easy invalids = invalids
 shapeProgress s invalids = invalids * maxShapeProgress `div` (maxMistakes s)
 
 data Skill = Easy | Medium | Hard
-
+data Session = Session Int Int
 data Game = Game String String Skill (Set Char) (Set Char)
-
-data Status 
-  = Playing
-  | GameOver
-  | Won
+data Status = Playing | GameOver| Won
 
 randomPick :: [String] -> IO String
 randomPick words = (words !!) <$> (randomRIO (0, end))
@@ -45,11 +41,12 @@ alphabet hidden = get.chr <$> [97..122]
       | c `member` hidden = ' '
       | otherwise = toUpper c
 
-printState :: Status -> Game -> IO ()
-printState st (Game word cat skill valid invalid) = do
-  putStrLn "\x1b[8A\x1b[0J"
+printState :: Session -> Status -> Game -> IO ()
+printState (Session wins fails) st (Game word cat skill valid invalid) = do
+  putStr $ "\x1b[" ++ (show rows) ++ "A\x1b[0J"
   mconcat $ putStrLn <$> zipWith fill
-    [ mconcat $ (:" ") <$> alphabet (valid `union` invalid)
+    [ "Wins: " ++ (show wins) ++ " Fails: " ++ (show fails)
+    , mconcat $ (:" ") <$> alphabet (valid `union` invalid)
     , ""
     , mconcat $ (:" ").wordChar <$> word
     , ""
@@ -80,18 +77,18 @@ status (Game word cat skill valid invalid)
   | (fromList word) == valid = Won
   | otherwise = Playing
 
-stateLoop :: Game -> InputT IO ()
-stateLoop s = do
-  let st = status s
-  lift (printState st s)
+stateLoop :: Session -> Game -> InputT IO Bool 
+stateLoop s g = do
+  let st = status g
+  lift (printState s st g)
   case st of
-    GameOver -> outputStrLn "Game Over!" >> return ()
-    Won -> outputStrLn "You won !!!" >> return ()
+    GameOver -> outputStrLn "Game Over!" >> return False
+    Won -> outputStrLn "You won !!!" >> return True
     Playing -> do
       key <- getInputChar "Guess a character, a ~ z: "
       case key of
-        Nothing -> return ()
-        Just c -> stateLoop (progress c s)
+        Nothing -> return False 
+        Just c -> stateLoop s (progress c g)
 
 continue :: InputT IO Bool
 continue = do
@@ -104,18 +101,22 @@ continue = do
       outputStr "\x1b[1A\x1b[0G"
       continue
 
-sessionLoop :: String -> [String] -> Skill -> InputT IO ()
-sessionLoop cat words skill = do
+updateSession :: Bool -> Session -> Session
+updateSession True (Session wins fails) = Session (wins + 1) fails
+updateSession False (Session wins fails) = Session wins (fails + 1)
+
+sessionLoop :: Session -> String -> [String] -> Skill -> InputT IO ()
+sessionLoop session cat words skill = do
   w <- lift (randomPick words)
-  stateLoop (Game w cat skill empty empty)
+  won <- stateLoop session (Game w cat skill empty empty)
   c <- continue
   case c of
     False -> return ()
     True -> do
       outputStrLn "\x1b[2A\x1b[0J"
-      sessionLoop cat words skill
+      sessionLoop (updateSession won session) cat words skill
 
 hangman :: String -> [String] -> Skill -> IO ()
 hangman cat words skill = do
-  mconcat $ replicate rows (putStrLn "") 
-  runInputT defaultSettings $ sessionLoop cat words skill
+  -- mconcat $ replicate rows (putStrLn "") 
+  runInputT defaultSettings $ sessionLoop (Session 0 0) cat words skill
