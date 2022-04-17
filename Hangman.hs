@@ -12,7 +12,7 @@ rows :: Int
 rows = 8
 
 maxMistakes :: Int
-maxMistakes = 18 
+maxMistakes = maximum $ pSeverity <$> shapeHangman 
 
 data State = State String (Set Char) (Set Char)
 
@@ -21,37 +21,26 @@ data Status
   | GameOver
   | Won
 
-
-printLine :: String -> IO ()
-printLine s = putStr s >> fill (length s)
-
-printAlphabet :: Set Char -> IO ()
-printAlphabet missing = printLine $ alphabet missing
-
-wordChar :: Set Char -> Char -> Char
-wordChar valid c 
-  | c `member` valid = c
-  | otherwise = '_'
-
-printWord :: String -> Set Char -> IO ()
-printWord w v = printLine $ charJoin " " (get <$> w)
-  where get = wordChar v
-
-blankLine :: IO ()
-blankLine = printLine ""
-
-printState :: State -> IO ()
-printState (State word valid invalid) = do
-  -- ANSI: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+printState :: Status -> State -> IO ()
+printState st (State word valid invalid) = do
   putStrLn "\x1b[8A\x1b[0J"
-  --putStrLn word
-  printAlphabet (valid `union` invalid) >> pRow 0  
-  blankLine >> pRow 1
-  printWord word valid >> pRow 2
-  blankLine >> pRow 3
-  printLine word >> pRow 4
-  blankLine >> pRow 5
-  where pRow r = printShapeRow r $ length invalid
+  mconcat $ putStrLn <$> zipWith fill
+    [ mconcat $ (:" ") <$> alphabet (valid `union` invalid)
+    , ""
+    , mconcat $ (:" ").wordChar <$> word
+    , ""
+    , word
+    , ""
+    ] (shape st <$> [0..6])
+  where 
+    fill x y = x ++ replicate (56 - length x) ' ' ++ y
+    errLen = length invalid
+    shape Won r = shapeWonRow r errLen
+    shape _ r = shapeHangmanRow r errLen
+    wordChar c 
+      | c `member` valid = c
+      | otherwise = '_'
+
 
 progress :: Char -> State -> State
 progress c (State word valid invalid) 
@@ -67,8 +56,9 @@ status (State word valid invalid)
 
 stateLoop :: State -> InputT IO ()
 stateLoop s = do
-  lift (printState s)
-  case status s of
+  let st = status s
+  lift (printState st s)
+  case st of
     GameOver -> outputStrLn "Game Over!" >> return ()
     Won -> outputStrLn "You won !!!" >> return ()
     Playing -> do
@@ -91,5 +81,5 @@ hangman words = do
         Nothing -> return ()
         Just 'n' -> return ()
         Just _ -> do
-          lift (putStrLn "\x1b[2A\x1b[0J")
+          outputStrLn "\x1b[2A\x1b[0J"
           loop

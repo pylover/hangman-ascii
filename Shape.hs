@@ -10,6 +10,25 @@ data Pixel = Pixel
   }
   deriving (Show)
 
+--
+--
+--    \O/
+--     |
+--    / \
+--
+
+shapeWon :: [Pixel]
+shapeWon = 
+  [ Pixel 0 2 4 '\\'
+  , Pixel 0 2 5 'O'
+  , Pixel 0 2 6 '/'
+  , Pixel 0 3 5 '|'
+  , Pixel 0 4 4 '/'
+  , Pixel 0 4 6 '\\'
+
+  ]
+
+
 --   +----+
 --   |    |
 --   |    O 
@@ -56,20 +75,19 @@ shapeColumns s = maximum $ pColumn <$> s
 shapeRows :: [Pixel] -> Int
 shapeRows s = maximum $ pRow <$> s
 
-printShapePixels :: [Pixel] -> Int -> Int -> Int -> Int -> Int -> IO ()
-printShapePixels shape v row col maxRow maxCol
-  | row > maxRow = putStr ""
-  | col == maxCol = putChar c
-      >> putStrLn ""
-      >> printShapePixels shape v (row + 1) 0 maxRow maxCol
-  | otherwise =
-      putChar c >> printShapePixels shape v row (col + 1) maxRow maxCol
+shapePixels :: [Pixel] -> Int -> Int -> Int -> Int -> Int -> String
+shapePixels shape v row col maxRow maxCol
+  | row > maxRow = ""
+  | col == maxCol = c : shapePixels shape v (row + 1) 0 maxRow maxCol
+  | otherwise = c: shapePixels shape v row (col + 1) maxRow maxCol
   where c = shapeCharAt shape v row col
 
-printShapeRow :: Int -> Int -> IO ()
-printShapeRow row v = printShapePixels s v row 0 row (shapeColumns s)
-  where s = shapeHangman
+shapeRow :: [Pixel] -> Int -> Int -> String
+shapeRow s row v = shapePixels s v row 0 row (shapeColumns s)
+
+shapeHangmanRow = shapeRow shapeHangman
+shapeWonRow = shapeRow shapeWon
 
 printShape :: Int -> IO ()
-printShape v = printShapePixels s v 0 0 (shapeRows s) (shapeColumns s)
+printShape v = putStrLn $ shapePixels s v 0 0 (shapeRows s) (shapeColumns s)
   where s = shapeHangman
