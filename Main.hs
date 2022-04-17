@@ -5,7 +5,7 @@ import Text.Printf
 import Options.Applicative
 import Data.Semigroup ((<>))
 
-import Hangman
+import Hangman2.Game
 import Paths_hangman2
 
 data Args = Args

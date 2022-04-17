@@ -1,4 +1,4 @@
-module Hangman where
+module Hangman2.Game where
 
 import Data.Set
 import Data.Char
@@ -7,7 +7,7 @@ import Control.Monad.Trans
 import System.Console.Haskeline
 import System.Random
 
-import Shape
+import Hangman2.Shape
 
 rows :: Int
 rows = 8
@@ -95,23 +95,25 @@ stateLoop s = do
         Nothing -> return ()
         Just c -> stateLoop (progress c s)
 
+continue :: InputT IO Bool
+continue = do
+  key <- getInputChar "Do you want to continue? [Y/n] "
+  case toLower <$> key of
+    Nothing -> return False
+    Just 'n' -> return False
+    Just 'y' -> return True
+    Just _ -> do 
+      outputStr "\x1b[1A\x1b[0G"
+      continue
 
 sessionLoop :: [String] -> Skill -> InputT IO ()
 sessionLoop words skill = do
   w <- lift (randomPick words)
   stateLoop (Game w skill empty empty)
-  -- case continue of
-  --   case False -> return ()
-  --   case True -> 
-  --     outputStrLn "\x1b[2A\x1b[0J"
-  --     sessionLoop words
-
-  key <- getInputChar "Do you want to continue? [Y/n] "
-  case key of
-    Nothing -> return ()
-    Just 'n' -> return ()
-    Just 'N' -> return ()
-    Just _ -> do
+  c <- continue
+  case c of
+    False -> return ()
+    True -> do
       outputStrLn "\x1b[2A\x1b[0J"
       sessionLoop words skill
 
