@@ -1,4 +1,4 @@
-module Hangman2.Shape where
+module Hangman.Shape where
 
 import Data.Bool
 

@@ -1,4 +1,4 @@
-module Hangman2.Database where
+module Hangman.Database where
 
 import Data.List
 

@@ -1,4 +1,4 @@
-module Hangman2.Game where
+module Hangman.Game where
 
 import Data.Set
 import Data.Char
@@ -7,7 +7,7 @@ import Control.Monad.Trans
 import System.Console.Haskeline
 import System.Random
 
-import Hangman2.Shape
+import Hangman.Shape
 
 rows :: Int
 rows = 8

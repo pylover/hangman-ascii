@@ -1,3 +1,5 @@
+HACKAGE = hangman
+
 .PHONY: run
 run:
 	cabal v2-run
@@ -16,7 +18,7 @@ test:
 
 .PHONY: install
 install:
-	cabal v2-install hangman2
+	cabal v2-install $(HACKAGE)
 
 .PHONY: env
 env:
