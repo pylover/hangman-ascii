@@ -9,7 +9,7 @@ import Helpers
 import Shape
 
 rows :: Int
-rows = 8 
+rows = 8
 
 maxMistakes :: Int
 maxMistakes = 18 
@@ -43,13 +43,13 @@ blankLine = printLine ""
 printState :: State -> IO ()
 printState (State word valid invalid) = do
   -- ANSI: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
-  putStr "\x1b[8A\x1b[0J"
-  putStrLn word
+  putStrLn "\x1b[8A\x1b[0J"
+  --putStrLn word
   printAlphabet (valid `union` invalid) >> pRow 0  
   blankLine >> pRow 1
   printWord word valid >> pRow 2
   blankLine >> pRow 3
-  blankLine >> pRow 4
+  printLine word >> pRow 4
   blankLine >> pRow 5
   where pRow r = printShapeRow r $ length invalid
 
@@ -69,7 +69,7 @@ stateLoop :: State -> InputT IO ()
 stateLoop s = do
   lift (printState s)
   case status s of
-    GameOver -> outputStrLn "Failed" >> return ()
+    GameOver -> outputStrLn "Game Over!" >> return ()
     Won -> outputStrLn "You won !!!" >> return ()
     Playing -> do
       key <- getInputChar "Guess a character, a ~ z: "
@@ -86,5 +86,10 @@ hangman words = do
     loop = do
       w <- lift (randomPick words)
       stateLoop (State w empty empty)
-
-
+      key <- getInputChar "Do you want to continue? [Y/n] "
+      case key of
+        Nothing -> return ()
+        Just 'n' -> return ()
+        Just _ -> do
+          lift (putStrLn "\x1b[2A\x1b[0J")
+          loop
