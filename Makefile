@@ -14,6 +14,11 @@ configure:
 test:
 	cabal v2-test
 
+.PHONY: install
+install:
+	cabal v2-install hangman2
+
+
 .PHONY: env
 env:
 	cabal update
