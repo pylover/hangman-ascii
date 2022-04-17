@@ -25,5 +25,6 @@ executable hangman-game
                      , random
                      , haskeline
                      , mtl
+                     , containers
   -- hs-source-dirs:
   default-language:    Haskell2010
