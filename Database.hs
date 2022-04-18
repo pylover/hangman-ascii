@@ -14,6 +14,7 @@ categoryNames =
   , "time"
   , "weather"
   , "misc"
+  , "foobar"
   ]
 
 categories :: [[String]]
@@ -25,6 +26,7 @@ categories =
   , time
   , weather
   , misc
+  , foobar
   ]
 
 getWords :: String -> [String]
@@ -36,7 +38,14 @@ getWords "places" = places
 getWords "time" = time
 getWords "weather" = weather
 getWords "misc" = misc
+getWords "foobar" = foobar
 getWords _ = getWords "all"
+
+foobar :: [String]
+foobar = 
+  [ "foo"
+  , "bar"
+  ]
 
 fruites :: [String]
 fruites = 
