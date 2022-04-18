@@ -12,6 +12,7 @@ _ _ _ r r _                                               |   /|\
 c h e r r y                                              _|_______ 
                                                         |_________|
 Game Over!
+Do you want to continue? [Y/n] 
 ```
 
 ## Install 
