@@ -4,13 +4,13 @@ Another Hangman game written in Haskel.
 
 ```bash
 Total words: 2882
-Wins: 7 Fails: 1                                        +----+
-A B C   E     H     K   M N   P Q   S     V W X Y Z     |    |
-                                                        |    O
-_ _ _ r r _                                             |   /|\
-                                                        |   / \
-c h e r r y                                             |
-
+Wins: 7 Fails: 1                                          +----+   
+A B C   E     H     K   M N   P Q   S     V W X Y Z       |    |   
+                                                          |    O   
+_ _ _ r r _                                               |   /|\  
+                                                          |   / \  
+c h e r r y                                              _|_______ 
+                                                        |_________|
 Game Over!
 ```
 
