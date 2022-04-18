@@ -22,7 +22,7 @@ maxShapeProgress = maximum $ pSeverity <$> shapeHangman
 
 shapeProgress :: Skill -> Int -> Int
 shapeProgress Easy invalids = invalids 
-shapeProgress s invalids = invalids * maxShapeProgress `div` (maxMistakes s)
+shapeProgress s invalids = maxShapeProgress - (maxMistakes s) + invalids
 
 data Skill = Easy | Medium | Hard
 data Session = Session Int Int
