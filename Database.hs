@@ -327,7 +327,6 @@ animals =
   , "macaw"
   , "mackerel"
   , "magpie"
-  , "mammal"
   , "manatee"
   , "mandrill"
   , "marlin"
