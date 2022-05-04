@@ -9,11 +9,13 @@ import HangmanAscii.Game
 import HangmanAscii.Database
 import Paths_HangmanAscii
 
+
 data Args = Args
   { dbfile :: String
   , skill :: String 
   , category :: String
   }
+
 
 sample :: Parser Args
 sample = Args
@@ -43,14 +45,17 @@ parseArgs = execParser opts
   where
     opts = info (sample <**> helper) (progDesc "Hangman game")
 
+
 loadWords :: String -> String -> IO [String]
 loadWords "" category = return $ getWords category
 loadWords fn _ = fmap lines $ readFile fn
+
 
 getSkill :: String -> Skill
 getSkill "easy" = Easy
 getSkill "medium" = Medium
 getSkill "hard" = Hard
+
 
 main :: IO ()
 main = parseArgs >>= go
