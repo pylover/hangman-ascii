@@ -1,9 +1,15 @@
-module Hangman.Database where
+module HangmanAscii.Database 
+  ( conCat
+  , getWords
+  ) where
+
 
 import Data.List
 
+
 conCat :: String
 conCat = intercalate ", " categoryNames
+
 
 categoryNames :: [String]
 categoryNames = 
@@ -17,6 +23,7 @@ categoryNames =
   , "foobar"
   ]
 
+
 categories :: [[String]]
 categories = 
   [ fruites
@@ -28,6 +35,7 @@ categories =
   , misc
   , foobar
   ]
+
 
 getWords :: String -> [String]
 getWords "all" = mconcat categories
@@ -41,11 +49,13 @@ getWords "misc" = misc
 getWords "foobar" = foobar
 getWords _ = getWords "all"
 
+
 foobar :: [String]
 foobar = 
   [ "foo"
   , "bar"
   ]
+
 
 fruites :: [String]
 fruites = 
@@ -132,6 +142,7 @@ fruites =
   , "tamarind"
   , "yuzu"
   ]
+
 
 animals :: [String]
 animals = 
@@ -491,6 +502,7 @@ animals =
   , "zebra"
   ]
 
+
 colours :: [String]
 colours =
   [ "black"
@@ -508,6 +520,7 @@ colours =
   , "yellow"
   , "white"
   ]
+
 
 places :: [String]
 places =
@@ -630,6 +643,7 @@ places =
   , "theatre"
   ]
 
+
 time :: [String]
 time =
   [ "afternoon"
@@ -693,6 +707,7 @@ time =
   , "yesterday"
   ]
 
+
 weather :: [String]
 weather =
   [ "blow"
@@ -734,6 +749,7 @@ weather =
   , "wind"
   , "windy"
   ]
+
 
 misc :: [String]
 misc = 

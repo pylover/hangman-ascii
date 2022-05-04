@@ -1,4 +1,7 @@
-module Hangman.Game where
+module HangmanAscii.Game 
+  ( Skill(..)
+  , hangman
+  ) where
 
 import Data.Set
 import Data.Char
@@ -7,7 +10,7 @@ import Control.Monad.Trans
 import System.Console.Haskeline
 import System.Random
 
-import Hangman.Shape
+import HangmanAscii.Shape
 
 rows :: Int
 rows = 8

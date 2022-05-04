@@ -1,6 +1,13 @@
-module Hangman.Shape where
+module HangmanAscii.Shape 
+  ( Pixel(..)
+  , shapeHangman
+  , shapeHangmanRow
+  , shapeWonRow
+  ) where
+
 
 import Data.Bool
+
 
 data Pixel = Pixel 
   { pSeverity :: Int
@@ -9,6 +16,7 @@ data Pixel = Pixel
   , pSymbol :: Char
   }
   deriving (Show)
+
 
 --       
 --       

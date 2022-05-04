@@ -5,9 +5,9 @@ import Text.Printf
 import Options.Applicative
 import Data.Semigroup ((<>))
 
-import Hangman.Game
-import Hangman.Database
-import Paths_hangman
+import HangmanAscii.Game
+import HangmanAscii.Database
+import Paths_HangmanAscii
 
 data Args = Args
   { dbfile :: String
