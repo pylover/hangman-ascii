@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                HangmanAscii
-version:             0.1.0.1
+version:             0.1.0.2
 synopsis:            Yet another Hangman game.
 description:
                      Another command line implementation of the classic 
@@ -28,7 +28,7 @@ executable hangman-ascii
                      , Shape
                      , Database
   -- other-extensions:
-  build-depends:       base >=4.12 && <4.13
+  build-depends:       base ==4.12.*
                      , optparse-applicative >=0.17 && <0.18
                      , random >=1.1 && <1.2
                      , haskeline >=0.7.4.3 && <0.8
