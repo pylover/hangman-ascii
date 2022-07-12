@@ -36,3 +36,8 @@ env:
 .PHONY: clean
 clean::
 	-cabal v2-clean
+
+
+.PHONY: sdist
+sdist:
+	cabal v2-sdist
