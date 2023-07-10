@@ -80,17 +80,17 @@ status (Game word cat skill valid invalid)
   | (fromList word) == valid = Won
   | otherwise = Playing
 
-stateLoop :: Session -> Game -> InputT IO Bool 
+stateLoop :: Session -> Game -> InputT IO (Maybe Bool)
 stateLoop s g = do
   let st = status g
   lift (printState s st g)
   case st of
-    GameOver -> outputStrLn "Game Over!" >> return False
-    Won -> outputStrLn "You won !!!" >> return True
+    GameOver -> outputStrLn "Game Over!" >> return  (Just False)
+    Won -> outputStrLn "You won !!!" >> return (Just True)
     Playing -> do
       key <- getInputChar "Guess a character, a ~ z: "
       case key of
-        Nothing -> return False 
+        Nothing -> return Nothing
         Just c -> stateLoop s (progress c g)
 
 continue :: InputT IO Bool
@@ -112,12 +112,15 @@ sessionLoop :: Session -> String -> [String] -> Skill -> InputT IO ()
 sessionLoop session cat words skill = do
   w <- lift (randomPick words)
   won <- stateLoop session (Game w cat skill empty empty)
-  c <- continue
-  case c of
-    False -> return ()
-    True -> do
-      outputStrLn "\x1b[2A\x1b[0J"
-      sessionLoop (updateSession won session) cat words skill
+  case won of
+    Nothing -> return ()
+    Just yes -> do
+      c <- continue
+      case c of
+        False -> return ()
+        True -> do
+          outputStrLn "\x1b[2A\x1b[0J"
+          sessionLoop (updateSession yes session) cat words skill
 
 hangman :: String -> [String] -> Skill -> IO ()
 hangman cat words skill = do
