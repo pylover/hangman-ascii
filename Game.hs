@@ -89,7 +89,7 @@ stateLoop s g = do
     Won -> outputStrLn "You won !!!" >> return (Just True)
     Playing -> do
       key <- getInputChar "Guess a character, a ~ z: "
-      case key of
+      case toLower <$> key of
         Nothing -> return Nothing
         Just c -> stateLoop s (progress c g)
 
